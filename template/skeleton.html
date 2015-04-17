@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+{{ before/html }}
+<html lang="{{ language }}">
+    {{ before/head }}
+    <head>
+        <meta charset="utf-8">
+        <meta name="generator" content="Framework">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        {{ head/meta }}
+        {{ head/opengraph }}
+        <title>{{ title }}</title>
+        {{ head/others }}
+        <link rel="shortcut icon" href="{{ favorite/icon }}">
+        <link rel="stylesheet" href="{{ resource/semantic/css }}">
+        {{ head/style }}
+        <script src="{{ resource/jquery }}" defer></script>
+        <script src="{{ resource/jquery/color }}" defer></script>
+        <script src="{{ resource/chart }}" defer></script>
+        <script src="{{ resource/moment }}" defer></script>
+        <script src="{{ resource/semantic/js }}" defer></script>
+        <script src="{{ resource/framework }}" defer></script>
+        {{ head/script }}
+    </head>
+    {{ after/head }}
+    {{ before/body }}
+    <body id="{{ page/id }}">
+        {{ body }}
+        <!-- Framework Elapsed Time {{ elapsed/time }}sec -->
+        <!-- Database Elapsed Time {{ database/time }}sec -->
+    </body>
+    {{ after/body }}
+</html>
+{{ after/html }}

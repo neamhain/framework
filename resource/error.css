@@ -1,0 +1,12 @@
+@charset "utf-8";
+
+main { min-width: 54rem; max-width: 72rem; margin: 0 auto; padding: 2.5rem; letter-spacing: -0.5pt }
+main * { text-rendering: geometricPrecision !important; -webkit-font-smoothing: antialiased !important; -moz-osx-font-smoothing: grayscale !important }
+main .ui.segment .ui.label span.left.floated { float: left }
+main .ui.segment .ui.label span.right.floated { float: right }
+main .ui.segment:last-child article { margin-bottom: 2rem }
+main .ui.segment article code { cursor: text; letter-spacing: normal }
+main .ui.segment article code span { display: block; min-height: 1.375rem; padding-left: 5.5rem; position: relative; font-size: 10pt; line-height: 1.375rem; font-family: 'Inconsolata', 'Menlo', 'Dotumche', monospace; white-space: pre-wrap; word-break: break-word }
+main .ui.segment article code span:before { content: attr(data-line); display: inline-block; width: 5rem; padding: 0 0.5rem; background: rgba(0, 0, 0, 0.0625); position: absolute; top: 0; bottom: 0; left: 0; text-align: right }
+main .ui.segment article code span:hover { background: rgba(0, 0, 0, 0.0625) }
+main .ui.segment article code span.target { background: rgba(255, 0, 0, 0.125); font-weight: bold }

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="robots" content="noindex, nofollow">
+        <meta name="generator" content="Framework">
+        <title>Framework</title>
+        <link rel="stylesheet" href="{{ resource/semantic/css }}">
+        <link rel="stylesheet" href="{{ framework/resource }}/error.css">
+        <script src="{{ resource/jquery }}" defer></script>
+        <script src="{{ resource/moment }}" defer></script>
+        <script src="{{ resource/semantic/js }}" defer></script>
+        <script src="{{ framework/resource }}/error.js" defer></script>
+    </head>
+    <body>
+        <main>
+            <header class="ui huge error message">
+                <h1 class="header">{{ error/type }}</h1>
+                <p>{{ error/message }}</p>
+            </header>
+            <div class="ui {{ error/trace }}segment">
+                <h2 class="ui top attached label">
+                    <span class="left floated">{{ error/file }}</span>
+                    <span class="right floated">around line {{ error/line }}</span>
+                </h2>
+                <article>{{ error/file/context }}</article>
+                <h3 class="ui bottom attached label">
+                    <span class="left floated">Powered by Framework</span>
+                    <span class="moment right floated" data-format="llll">{{ time }}</span>
+                </h3>
+            </div>
+        </main>
+    </body>
+</html>

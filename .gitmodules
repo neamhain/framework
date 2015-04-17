@@ -1,0 +1,9 @@
+[submodule "component/phpmailer"]
+	path = component/phpmailer
+	url = https://github.com/PHPMailer/PHPMailer
+[submodule "resource/chartjs"]
+	path = resource/chartjs
+	url = https://github.com/nnnick/Chart.js
+[submodule "resource/semanticui"]
+	path = resource/semanticui
+	url = https://github.com/Semantic-Org/Semantic-UI
