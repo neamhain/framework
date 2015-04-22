@@ -19,3 +19,4 @@ Framework is a module-based web framework for Apache + PHP environment.
 - [Release notes](RELEASE.md)
 
 ## License
+MIT

@@ -175,19 +175,35 @@
     }
 
     trait RESTful {
+        private $RequestContext = null;
+        
         public function &__get($_Name) {
             if($_Name === 'Request') {
-                $_ContentType = Lowercase(explode(';', $_SERVER['CONTENT_TYPE'], 2)[0]);
+                $_StandardInput = file_get_contents('php://input');
                 
-                if($_ContentType === 'multipart/form-data') {
-                    $_RawContext = JsonEncode($this->Post, JSON_NUMERIC_CHECK);
-                } else {
-                    $_RawContext = file_get_contents('php://input');
+                if(php_sapi_name() === 'cli') {
+                    return $this->RequestContext;
                 }
                 
-                if(IsJson($_RawContext)) {
+                if($_SERVER['CONTENT_TYPE']) {
+                    $_ContentType = Lowercase(explode(';', $_SERVER['CONTENT_TYPE'], 2)[0]);
+                } else {
+                    $_ContentType = 'application/x-www-form-urlencoded';
+                }
+                
+                if($_SERVER['REQUEST_METHOD'] === 'GET' && !strlen($_StandardInput)) {
+                    $_RawContext = $this->Get;
+                } else if($_ContentType === 'multipart/form-data') {
+                    $_RawContext = $this->Post;
+                } else {
+                    $_RawContext = $_StandardInput;
+                }
+                
+                if(is_array($_RawContext)) {
+                    return $_RawContext;
+                } else if(is_string($_RawContext) && IsJson($_RawContext)) {
                     return JsonDecode($_RawContext);
-                } else if($_ContentType === 'application/x-www-form-urlencoded') {
+                } else if(is_string($_RawContext) && $_ContentType === 'application/x-www-form-urlencoded') {
                     parse_str($_RawContext, $_Context);
                     
                     return $_Context;
@@ -197,6 +213,16 @@
             }
             
             return parent::__get($_Name);
+        }
+        
+        public function __set($_Name, $_Value) {
+            if(php_sapi_name() !== 'cli') {
+                return;
+            }
+            
+            if($_Name === 'Request') {
+                $this->RequestContext = $_Value;
+            }
         }
         
         public function Process() {
