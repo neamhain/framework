@@ -19,9 +19,6 @@
             define('FRAMEWORK', true);
             define('FRAMEWORK_PATH' , __DIR__);
             
-            session_name('FRAMEWORK_SESSION');
-            session_start();
-            
             foreach(scandir(FRAMEWORK_PATH . '/component/standard') as $_Target) {
                 $_Target = FRAMEWORK_PATH . '/component/standard/' . $_Target;
 
@@ -36,6 +33,18 @@
             require_once 'component/database.php';
             require_once 'component/module.php';
             require_once 'component/template.php';
+            require_once 'component/session.php';
+            
+            session_name('FRAMEWORK_SESSION');
+            
+            session_set_save_handler(
+                [Session::Instance(), 'Open'],
+                [Session::Instance(), 'Close'],
+                [Session::Instance(), 'Read'],
+                [Session::Instance(), 'Write'],
+                [Session::Instance(), 'Destroy'],
+                [Session::Instance(), 'GarbageCollect']
+            );
             
             $this->Configuration = [];
             $this->IsInstalled = false;
@@ -89,11 +98,15 @@
             header('Pragma: no-cache');
             
             $this->Setting = array_merge([
+                'Deploy' => 'Production',
                 'Criteria' => dirname(__DIR__),
                 'Mainstream' => ''
             ], $_Setting);
             
+            define('FRAMEWORK_DEPLOY' , $this->Setting['Deploy']);
             define('FRAMEWORK_CRITERIA' , $this->Setting['Criteria']);
+            
+            session_start();
             
             if(IsExists(static::Resolve('configuration.php'))) {
                 require_once static::Resolve('configuration.php');
@@ -102,6 +115,11 @@
                 
                 $_Session = &$_SESSION[static::Take('UniqueId')];
                 $_SessionOwnerAgent = &$_Session['__OWNER_AGENT__'];
+                
+                define('FRAMEWORK_AES_KEY', static::Take('AesKey'));
+                define('FRAMEWORK_AES_IV', static::Take('AesIv'));
+                define('FRAMEWORK_RSA_PUBLIC_KEY', static::Take('RsaPublicKey'));
+                define('FRAMEWORK_RSA_PRIVATE_KEY', static::Take('RsaPrivateKey'));
                     
                 if(!isset($_SessionOwnerAgent)) {
                     $_SessionOwnerAgent = $_SERVER['HTTP_USER_AGENT'];

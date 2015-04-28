@@ -175,15 +175,9 @@
     }
 
     trait RESTful {
-        private $RequestContext = null;
-        
         public function &__get($_Name) {
             if($_Name === 'Request') {
                 $_StandardInput = file_get_contents('php://input');
-                
-                if(php_sapi_name() === 'cli') {
-                    return $this->RequestContext;
-                }
                 
                 if($_SERVER['CONTENT_TYPE']) {
                     $_ContentType = Lowercase(explode(';', $_SERVER['CONTENT_TYPE'], 2)[0]);
@@ -196,7 +190,7 @@
                 } else if($_ContentType === 'multipart/form-data') {
                     $_RawContext = $this->Post;
                 } else {
-                    $_RawContext = $_StandardInput;
+                    $_RawContext = $_StandardInput ? $_StandardInput : [];
                 }
                 
                 if(is_array($_RawContext)) {
@@ -215,14 +209,8 @@
             return parent::__get($_Name);
         }
         
-        public function __set($_Name, $_Value) {
-            if(php_sapi_name() !== 'cli') {
-                return;
-            }
-            
-            if($_Name === 'Request') {
-                $this->RequestContext = $_Value;
-            }
+        public function GetSessionId() {
+            echo session_id();
         }
         
         public function Process() {

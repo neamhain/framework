@@ -1,5 +1,11 @@
 # Framework release note
 
+## 0.1.2
+- **April 28th, 2015**
+- RSA supported
+- Session handler overrided
+- UnitTest module algorithm fixed
+
 ## 0.1.1
 - **April 22nd, 2015**
 - Getter of RESTful trait fixed

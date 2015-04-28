@@ -17,16 +17,18 @@
             try {
                 $this->AssertEquals($_Alpha, JsonEncode($_Beta));
                 
-                echo "\033[0;32m" . '[✓] FRAMEWORK UNIT TEST CASE ' . $GLOBALS['FRAMEWORK_UNIT_TEST_COUNT'] . ' SUCCESS';
+                if(!empty($_Beta)) {
+                    echo "\033[0;32m" . '[✓] FRAMEWORK UNIT TEST CASE ' . $GLOBALS['FRAMEWORK_UNIT_TEST_COUNT'] . ' SUCCESS' . "\033[0m\n";
+                }
                 
                 $_Result = true;
             } catch(Exception $_Exception) {
-                echo "\033[0;31m" . '[ ] FRAMEWORK UNIT TEST CASE ' . $GLOBALS['FRAMEWORK_UNIT_TEST_COUNT'] . ' FAILURE';
+                echo "\033[0;31m" . '[ ] FRAMEWORK UNIT TEST CASE ' . $GLOBALS['FRAMEWORK_UNIT_TEST_COUNT'] . ' FAILURE' . "\033[0m\n";
+                
+                var_dump($_Alpha, JsonEncode($_Beta));
                 
                 $_Result = false;
             }
-            
-            echo "\033[0m\n";
             
             $GLOBALS['FRAMEWORK_UNIT_TEST_ELAPSED_TIME'] += microtime(true);
             
