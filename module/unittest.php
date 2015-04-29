@@ -21,14 +21,14 @@
             
             foreach($this->Result as $_Index => $_Result) {
                 if($_Result === true) {
-                    $_JUnit .= '<testcase classname="' . static::class . '" name="Case Number ' . $_Index . '" />';
+                    $_JUnit .= '<testcase classname="' . static::class . '" name="Case Number ' . ($_Index + 1) . '" />';
                     
                     continue;
                 }
                 
                 if($_Result === null) {
                     $_JUnit .=
-                        '<testcase classname="' . static::class . '" name="Case Number ' . $_Index . '">' .
+                        '<testcase classname="' . static::class . '" name="Case Number ' . ($_Index + 1) . '">' .
                             '<skipped />' .
                         '</testcase>';
                     
@@ -37,7 +37,7 @@
                 
                 if(is_array($_Result)) {
                     $_JUnit .=
-                        '<testcase classname="' . static::class . '" name="Case Number ' . $_Index . '">' .
+                        '<testcase classname="' . static::class . '" name="Case Number ' . ($_Index + 1) . '">' .
                             '<failure type="Response"><![CDATA[' . $_Result['Response'] . ']]></failure>' .
                             '<failure type="Expectation"><![CDATA[' . $_Result['Expectation'] . ']]></failure>' .
                         '</testcase>';
