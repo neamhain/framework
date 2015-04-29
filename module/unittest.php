@@ -18,12 +18,14 @@
                 $this->AssertEquals($_Alpha, JsonEncode($_Beta));
                 
                 if(!empty($_Beta)) {
-                    echo "\033[0;32m" . '[✓] FRAMEWORK UNIT TEST CASE ' . $GLOBALS['FRAMEWORK_UNIT_TEST_COUNT'] . ' SUCCESS' . "\033[0m\n";
+                    echo "\033[0;32m" . '[✓] UnitTest Case Number ' . $GLOBALS['FRAMEWORK_UNIT_TEST_COUNT'] . ' Succeed' . "\033[0m\n";
+                } else {
+                    echo '[*] UnitTest Case Number ' . $GLOBALS['FRAMEWORK_UNIT_TEST_COUNT'] . ' Passed' . "\n";
                 }
                 
                 $_Result = true;
             } catch(Exception $_Exception) {
-                echo "\033[0;31m" . '[ ] FRAMEWORK UNIT TEST CASE ' . $GLOBALS['FRAMEWORK_UNIT_TEST_COUNT'] . ' FAILURE' . "\033[0m\n";
+                echo "\033[0;31m" . '[ ] UnitTest Case Number ' . $GLOBALS['FRAMEWORK_UNIT_TEST_COUNT'] . ' Failure' . "\033[0m\n";
                 
                 var_dump($_Alpha, JsonEncode($_Beta));
                 

@@ -63,7 +63,7 @@
         public function GarbageCollect($_MaximumLifeTime) {
             $_Path = Framework::Resolve('session');
             
-            foreach(array_diff(scandir($_Path), [ '.', '..' ]) as $_Item) {
+            foreach(array_diff(scandir($_Path), [ '.', '..', '.htaccess' ]) as $_Item) {
                 if(is_file($_Path . '/' . $_Item) && filemtime($_Path . '/' . $_Item) + $_MaximumLifeTime < time()) {
                     Remove($_Path . '/' . $_Item);
                 }

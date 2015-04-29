@@ -38,6 +38,10 @@
     }
 
     function Remove($_Target) {
+        if(is_file($_Target)) {
+            return unlink($_Target) ? true : false;
+        }
+        
         foreach(array_diff(scandir($_Target), [ '.', '..' ]) as $_Item) {
             if(is_dir($_Target . '/' . $_Item)) {
                 Remove($_Target . '/' . $_Item);
@@ -48,7 +52,7 @@
             unlink($_Target . '/' . $_Item);
         }
         
-        return rmdir($_Target);
+        return rmdir($_Target) ? true : false;
     }
 
     function Upload($_Target) {
