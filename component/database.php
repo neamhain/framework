@@ -124,6 +124,7 @@
                     $_BeforeField = Dasherize(array_keys($_Structure)[$_Index - 1], true);
                     $_Option = $_Structure[$_Field];
                     $_Indexes = [];
+                    $_Fulltexts = [];
                     
                     if($_OriginalStructure[$_Field] === $_Structure[$_Field]) {
                         continue;
@@ -225,6 +226,7 @@
             ];
             
             $_Indexes = [];
+            $_Fulltexts = [];
             
             foreach($_Structure as $_Field => $_Option) {
                 if(!is_array($_Option['Type'])) {
