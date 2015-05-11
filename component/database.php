@@ -177,6 +177,10 @@
                             
                             $_Indexes[] = $_Field;
                         }
+                        
+                        if($_Option['Fulltext']) {
+                            $_Fulltexts[] = $_Field;
+                        }
                     } else {
                         $_Type = "ENUM('" . Lowercase(implode("', '", $_Option['Type'])) . "')";
                         $_DefaultValue = "";
@@ -194,6 +198,12 @@
                         $_SQL = "ALTER TABLE `%s` ADD INDEX ( `%s` )";
                         
                         $this->Query(sprintf($_SQL, Dasherize($_Name, true), $this->Escape(Dasherize($_Index, true))));
+                    }
+                    
+                    foreach($_Fulltexts as $_Fulltext) {
+                        $_SQL = "ALTER TABLE `%s` ADD FULLTEXT ( `%s` )";
+                        
+                        $this->Query(sprintf($_SQL, Dasherize($_Name, true), $this->Escape(Dasherize($_Fulltext, true))));
                     }
                     
                     $_Changed = true;
@@ -265,6 +275,10 @@
                         
                         $_Indexes[] = $_Field;
                     }
+                    
+                    if($_Option['Fulltext']) {
+                        $_Fulltexts[] = $_Field;
+                    }
                 } else {
                     $_Type = "ENUM('" . Lowercase(implode("', '", $_Option['Type'])) . "')";
                     $_DefaultValue = "";
@@ -277,6 +291,10 @@
             
             foreach($_Indexes as $_Index) {
                 $_StructureSQL[] = sprintf("INDEX ( `%s` )", $this->Escape(Dasherize($_Index, true)));
+            }
+            
+            foreach($_Fulltexts as $_Fulltext) {
+                $_StructureSQL[] = sprintf("FULLTEXT ( `%s` )", $this->Escape(Dasherize($_Fulltext, true)));
             }
             
             $_StructureSQL[] = "PRIMARY KEY ( `serial_id` )";
