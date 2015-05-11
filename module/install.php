@@ -29,6 +29,7 @@
                 return;
             }
             
+            MakeDirectory(Framework::Resolve('cache'), 0707);
             MakeDirectory(Framework::Resolve('files'), 0707);
             MakeDirectory(Framework::Resolve('module'), 0707);
             MakeDirectory(Framework::Resolve('session'), 0707);
@@ -36,6 +37,10 @@
             MakeDirectory(Framework::Resolve('resource/source'), 0707);
             MakeDirectory(Framework::Resolve('template'), 0707);
             MakeDirectory(Framework::Resolve('template/source'), 0707);
+            
+            if(!IsExists(Framework::Resolve('cache/.htaccess'))) {
+                Write(Framework::Resolve('cache/.htaccess'), 'Require all denied');
+            }
             
             if(!IsExists(Framework::Resolve('module/.htaccess'))) {
                 Write(Framework::Resolve('module/.htaccess'), 'Require all denied');
@@ -71,6 +76,7 @@
                     Framework::Resolve('.gitignore'),
                     implode("\n", [
                         '# DIRECTORIES',
+                        '/cache',
                         '/files',
                         '/session',
                         '',

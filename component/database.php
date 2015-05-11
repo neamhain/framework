@@ -62,8 +62,8 @@
             return $this->Connection->real_escape_string($_String);
         }
         
-        public function Tables() {
-            return array_keys($this->Table);
+        public function Tables($_GetStructure) {
+            return !$_GetStructure ? array_keys($this->Table) : $this->Table;
         }
         
         // Essential methods
@@ -348,92 +348,102 @@
         
         // Basic methods
         public function Select($_Name, $_Detail = []) {
-            $_Fields = [];
-            $_WhereClause = "";
-            $_OrderClause = "";
-            $_LimitClause = "";
-            $_GroupByClause = "";
+            $_Hash = md5($_Name . serialize($_Detail));
             
-            if(gettype($_Detail) === 'integer' && $_Detail > 0 || is_numeric($_Detail) && intval($_Detail) > 0) {
-                $_Detail = [ 'WHERE' => [ 'Serial' => $_Detail ] ];
-            }
-            
-            if(is_array($_Detail) && !array_key_exists('FIELDS', $_Detail) && !array_key_exists('WHERE', $_Detail) && !array_key_exists('ORDER', $_Detail) && !array_key_exists('LIMIT', $_Detail) && count($_Detail) > 0) {
-                $_Detail = [ 'WHERE' => $_Detail ];
-            }
-            
-            if($_Detail['FIELDS']) {
-                foreach($_Detail['FIELDS'] as $_Field) {
-                    $_Fields[] = $_Field === 'COUNT(*)' ? $_Field : sprintf("`%s`", $_Field);
+            if(!IsExists(Framework::Resolve('cache/' . $_Hash . '.sql'))) {
+                $_Fields = [];
+                $_WhereClause = "";
+                $_OrderClause = "";
+                $_LimitClause = "";
+                $_GroupByClause = "";
+
+                if(gettype($_Detail) === 'integer' && $_Detail > 0 || is_numeric($_Detail) && intval($_Detail) > 0) {
+                    $_Detail = [ 'WHERE' => [ 'Serial' => $_Detail ] ];
                 }
-            }
-            
-            foreach($_Fields as $_Index => &$_Field) {
-                if(gettype($_Index) === 'string') {
-                    $_Field = sprintf("`%s` AS %s", $_Index, $_Field);
+
+                if(is_array($_Detail) && !array_key_exists('FIELDS', $_Detail) && !array_key_exists('WHERE', $_Detail) && !array_key_exists('ORDER', $_Detail) && !array_key_exists('LIMIT', $_Detail) && count($_Detail) > 0) {
+                    $_Detail = [ 'WHERE' => $_Detail ];
                 }
-            }
-            
-            if(count($_Fields) > 0) {
-                $_Fields = implode(", ", array_values($_Fields));
-            } else {
-                $_Fields = "*";
-            }
-            
-            if($_Detail['WHERE']) {
-                $_WherePieces = [];
-                
-                foreach($_Detail['WHERE'] as $_Field => $_Value) {
-                    if(preg_match('/^OR\s+.+$/', $_Field)) {
-                        if(preg_match('/^%.+%$/', $_Value)) {
-                            $_WherePieces[] = sprintf("OR `%s` LIKE '%s'", $this->Escape(Dasherize(preg_replace('/^OR\s+/', '', $_Field), true)), $this->Escape($_Value));
-                        } else {
-                            $_WherePieces[] = sprintf("OR `%s`='%s'", $this->Escape(Dasherize(preg_replace('/^OR\s+/', '', $_Field), true)), $this->Escape(Dasherize($_Value, true)));
-                        }
-                        
-                    } else if(preg_match('/(<|>|<=|>=)$/', $_Field)) {
-                        $_WherePieces[] = sprintf("`%s` %s '%s'", $this->Escape(Dasherize(preg_replace('/(.+)(<|>|<=|>=)$/', '$1', $_Field), true)), preg_replace('/.+(<|>|<=|>=)$/', '$1', $_Field), $this->Escape(Dasherize($_Value, true)));
-                    } else if($_Field === 'Serial') {
-                        $_WherePieces[] = sprintf("`serial_id`='%s'", $this->Escape(Dasherize($_Value, true)));
-                    } else {
-                        if(preg_match('/^%.+%$/', $_Value)) {
-                            $_WherePieces[] = sprintf("`%s` LIKE '%s'", $this->Escape(Dasherize($_Field, true)), $this->Escape($_Value));
-                        } else {
-                            $_WherePieces[] = sprintf("`%s`='%s'", $this->Escape(Dasherize($_Field, true)), $this->Escape(Dasherize($_Value, true)));
-                        }
+
+                if($_Detail['FIELDS']) {
+                    foreach($_Detail['FIELDS'] as $_Field) {
+                        $_Fields[] = $_Field === 'COUNT(*)' ? $_Field : sprintf("`%s`", $_Field);
                     }
                 }
-                
-                $_WhereClause .= " WHERE " . str_replace("AND OR", "OR", implode(" AND ", $_WherePieces));
-            }
-            
-            if($_Detail['ORDER']) {
-                $_OrderPieces = [];
-                
-                foreach($_Detail['ORDER'] as $_Field => $_Value) {
-                    if($_Field === 'Serial') {
-                        $_OrderPieces[] = sprintf("`serial_id` %s", $_Value ? "DESC" : "ASC");
-                    } else {
-                        $_OrderPieces[] = sprintf("`%s` %s", $this->Escape(Dasherize($_Field, true)), $_Value ? "DESC" : "ASC");
+
+                foreach($_Fields as $_Index => &$_Field) {
+                    if(gettype($_Index) === 'string') {
+                        $_Field = sprintf("`%s` AS %s", $_Index, $_Field);
                     }
                 }
-                
-                $_OrderClause .= " ORDER BY " . implode(', ', $_OrderPieces);
-            }
-            
-            if($_Detail['LIMIT']) {
-                if(is_array($_Detail['LIMIT'])) {
-                    $_LimitClause = sprintf(" LIMIT %s, %s", $_Detail['LIMIT'][0], $_Detail['LIMIT'][1]);
+
+                if(count($_Fields) > 0) {
+                    $_Fields = implode(", ", array_values($_Fields));
                 } else {
-                    $_LimitClause = sprintf(" LIMIT %s", $_Detail['LIMIT']);
+                    $_Fields = "*";
                 }
+
+                if($_Detail['WHERE']) {
+                    $_WherePieces = [];
+
+                    foreach($_Detail['WHERE'] as $_Field => $_Value) {
+                        if(preg_match('/^OR\s+.+$/', $_Field)) {
+                            if(preg_match('/^%.+%$/', $_Value)) {
+                                $_WherePieces[] = sprintf("OR `%s` LIKE '%s'", $this->Escape(Dasherize(preg_replace('/^OR\s+/', '', $_Field), true)), $this->Escape($_Value));
+                            } else {
+                                $_WherePieces[] = sprintf("OR `%s`='%s'", $this->Escape(Dasherize(preg_replace('/^OR\s+/', '', $_Field), true)), $this->Escape(Dasherize($_Value, true)));
+                            }
+
+                        } else if(preg_match('/(!=|<|>|<=|>=)$/', $_Field)) {
+                            $_WherePieces[] = sprintf("`%s` %s '%s'", $this->Escape(Dasherize(preg_replace('/(.+)(!=|<|>|<=|>=)$/', '$1', $_Field), true)), preg_replace('/.+(!=|<|>|<=|>=)$/', '$1', $_Field), $this->Escape(Dasherize($_Value, true)));
+                        } else if($_Field === 'Serial') {
+                            $_WherePieces[] = sprintf("`serial_id`='%s'", $this->Escape(Dasherize($_Value, true)));
+                        } else {
+                            if(preg_match('/^%.+%$/', $_Value)) {
+                                $_WherePieces[] = sprintf("`%s` LIKE '%s'", $this->Escape(Dasherize($_Field, true)), $this->Escape($_Value));
+                            } else {
+                                $_WherePieces[] = sprintf("`%s`='%s'", $this->Escape(Dasherize($_Field, true)), $this->Escape(Dasherize($_Value, true)));
+                            }
+                        }
+                    }
+
+                    $_WhereClause .= " WHERE " . str_replace("AND OR", "OR", implode(" AND ", $_WherePieces));
+                }
+
+                if($_Detail['ORDER']) {
+                    $_OrderPieces = [];
+
+                    foreach($_Detail['ORDER'] as $_Field => $_Value) {
+                        if($_Field === 'Serial') {
+                            $_OrderPieces[] = sprintf("`serial_id` %s", $_Value ? "DESC" : "ASC");
+                        } else {
+                            $_OrderPieces[] = sprintf("`%s` %s", $this->Escape(Dasherize($_Field, true)), $_Value ? "DESC" : "ASC");
+                        }
+                    }
+
+                    $_OrderClause .= " ORDER BY " . implode(', ', $_OrderPieces);
+                }
+
+                if($_Detail['LIMIT']) {
+                    if(is_array($_Detail['LIMIT'])) {
+                        $_LimitClause = sprintf(" LIMIT %s, %s", $_Detail['LIMIT'][0], $_Detail['LIMIT'][1]);
+                    } else {
+                        $_LimitClause = sprintf(" LIMIT %s", $_Detail['LIMIT']);
+                    }
+                }
+
+                if($_Detail['GROUP BY']) {
+                    $_GroupByClause = sprintf(" GROUP BY `%s`", $_Detail['GROUP BY']);
+                }
+                
+                $_SQL = sprintf("SELECT %s FROM `%s`%s%s%s%s", $_Fields, $this->Escape(Dasherize($_Name, true)), $_WhereClause, $_GroupByClause, $_OrderClause, $_LimitClause);
+                
+                Write(Framework::Resolve('cache/' . $_Hash . '.sql'), $_SQL);
+            } else {
+                $_SQL = Read(Framework::Resolve('cache/' . $_Hash . '.sql'));
             }
             
-            if($_Detail['GROUP BY']) {
-                $_GroupByClause = sprintf(" GROUP BY `%s`", $_Detail['GROUP BY']);
-            }
-            
-            $_Result = $this->Query(sprintf("SELECT %s FROM `%s`%s%s%s%s", $_Fields, $this->Escape(Dasherize($_Name, true)), $_WhereClause, $_GroupByClause, $_OrderClause, $_LimitClause));
+            $_Result = $this->Query($_SQL);
             
             if($_Result) {
                 $_Fetched = [];
