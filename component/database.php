@@ -136,6 +136,7 @@
                             'String' => "TINYTEXT",
                             'Password' => "CHAR(60)",
                             'Number' => "BIGINT",
+                            'Double' => "DOUBLE",
                             'Boolean' => "BOOLEAN",
                             'Date' => "DATETIME",
                             'Context' => "LONGTEXT",
@@ -149,6 +150,7 @@
                             'String' => "''",
                             'Password' => "''",
                             'Number' => "'0'",
+                            'Double' => "'0.0'",
                             'Boolean' => "TRUE",
                             'Date' => "CURRENT_TIMESTAMP",
                             'Context' => "''",
@@ -235,6 +237,7 @@
                         'String' => "TINYTEXT",
                         'Password' => "CHAR(60)",
                         'Number' => "BIGINT",
+                        'Double' => "DOUBLE",
                         'Boolean' => "BOOLEAN",
                         'Date' => "DATETIME",
                         'Context' => "LONGTEXT",
@@ -248,6 +251,7 @@
                         'String' => "''",
                         'Password' => "''",
                         'Number' => "'0'",
+                        'Double' => "'0.0'",
                         'Boolean' => "TRUE",
                         'Date' => "CURRENT_TIMESTAMP",
                         'Context' => "''",
@@ -530,9 +534,9 @@
                         $_ValueClause = sprintf("%s", $_Value ? "TRUE" : "FALSE");
                     } else if(is_array($_Type)) {
                         $_ValueClause = sprintf("'%s'", Lowercase($_Value));
-                    } else if($_Type === 'Number' && preg_match('/^\+/', $_Value)) {
+                    } else if(preg_match('/Number|Double/', $_Type) && preg_match('/^\+/', $_Value)) {
                         $_ValueClause = sprintf("`%s`+'%s'", $this->Escape(Dasherize($_Field, true)), preg_replace('/^\+/', '', $_Value));
-                    } else if($_Type === 'Number' && preg_match('/^-/', $_Value)) {
+                    } else if(preg_match('/Number|Double/', $_Type) && preg_match('/^-/', $_Value)) {
                         $_ValueClause = sprintf("`%s`-'%s'", $this->Escape(Dasherize($_Field, true)), preg_replace('/^-/', '', $_Value));
                     } else if($_Type === 'JSON') {
                         $_ValueClause = JsonEncode($_Value, JSON_NUMERIC_CHECK);
