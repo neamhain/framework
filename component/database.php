@@ -411,10 +411,6 @@
                     $_WherePieces = [];
 
                     foreach($_Detail['WHERE'] as $_Field => $_Value) {
-                        if(!$this->Table[$_Name][$_Field]) {
-                            continue;
-                        }
-                        
                         $_Type = $this->Table[$_Name][preg_replace('/(!=|<|>|<=|>=)$/', '$1', $_Field)]['Type'];
                         
                         if($_Type === 'Date') {
