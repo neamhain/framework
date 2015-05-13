@@ -417,8 +417,6 @@
                         
                         $_Type = $this->Table[$_Name][$_Field]['Type'];
                         
-                        Write(Framework::Resolve('log'), JsonEncode($this->Table[$_Name][$_Field]));
-                        
                         if($_Type === 'Date') {
                             $_Value = date('Y-m-d H:i:s', $_Value);
                         }
@@ -475,6 +473,7 @@
                 $_SQL = sprintf("SELECT %s FROM `%s`%s%s%s%s", $_Fields, $this->Escape(Dasherize($_Name, true)), $_WhereClause, $_GroupByClause, $_OrderClause, $_LimitClause);
                 
                 Write(Framework::Resolve('cache/' . $_Hash . '.sql'), $_SQL);
+                Write(Framework::Resolve('cache/' . $_Hash . '.json'), array_merge(['Table' => $this->Table[$_Name], 'Detail' => $_Detail]));
             } else {
                 $_SQL = Read(Framework::Resolve('cache/' . $_Hash . '.sql'));
             }
