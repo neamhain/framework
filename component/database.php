@@ -418,13 +418,7 @@
                         $_Type = $this->Table[$_Name][$_Field]['Type'];
                         
                         if($_Type === 'Date') {
-                            $_Value = strtotime($_Value);
-                        } else if($_Type === 'Boolean') {
-                            $_Value = $_Value ? true : false;
-                        } else if(is_array($_Type)) {
-                            $_Value = Classify($_Value);
-                        } else if($_Type === 'JSON') {
-                            $_Value = JsonDecode($_Value);
+                            $_Value = date('Y-m-d H:i:s', $_Value);
                         }
                         
                         if(preg_match('/^OR\s+.+$/', $_Field)) {
