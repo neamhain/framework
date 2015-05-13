@@ -413,8 +413,16 @@
                     foreach($_Detail['WHERE'] as $_Field => $_Value) {
                         $_Type = $this->Table[$_Name][preg_replace('/(!=|<|>|<=|>=)$/', '', $_Field)]['Type'];
                         
-                        if($_Type === 'Date') {
+                        if($_Type === 'Password') {
+                            $_Value = Password($_Value);
+                        } else if($_Type === 'Date') {
                             $_Value = date('Y-m-d H:i:s', $_Value);
+                        } else if($_Type === 'Boolean') {
+                            $_Value = $_Value ? "TRUE" : "FALSE";
+                        } else if(is_array($_Type)) {
+                            $_Value = Lowercase($_Value);
+                        } else if($_Type === 'JSON') {
+                            $_Value = JsonEncode($_Value, JSON_NUMERIC_CHECK);
                         }
                         
                         if(preg_match('/^OR\s+.+$/', $_Field)) {
@@ -469,7 +477,6 @@
                 $_SQL = sprintf("SELECT %s FROM `%s`%s%s%s%s", $_Fields, $this->Escape(Dasherize($_Name, true)), $_WhereClause, $_GroupByClause, $_OrderClause, $_LimitClause);
                 
                 Write(Framework::Resolve('cache/' . $_Hash . '.sql'), $_SQL);
-                Write(Framework::Resolve('cache/' . $_Hash . '.json'), JsonEncode(array_merge(['Table' => $this->Table[$_Name], 'Detail' => $_Detail])));
             } else {
                 $_SQL = Read(Framework::Resolve('cache/' . $_Hash . '.sql'));
             }
@@ -546,7 +553,7 @@
                     } else if(preg_match('/Number|Double/', $_Type) && preg_match('/^-/', $_Value)) {
                         $_ValueClause = sprintf("`%s`-'%s'", $this->Escape(Dasherize($_Field, true)), preg_replace('/^-/', '', $_Value));
                     } else if($_Type === 'JSON') {
-                        $_ValueClause = JsonEncode($_Value, JSON_NUMERIC_CHECK);
+                        $_ValueClause = sprintf("'%s'", JsonEncode($_Value, JSON_NUMERIC_CHECK));
                     } else {
                         $_ValueClause = sprintf("'%s'", $this->Escape($_Value));
                     }
