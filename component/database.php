@@ -411,6 +411,22 @@
                     $_WherePieces = [];
 
                     foreach($_Detail['WHERE'] as $_Field => $_Value) {
+                        if(!$this->Table[$_Name][$_Field]) {
+                            continue;
+                        }
+                        
+                        $_Type = $this->Table[$_Name][$_Field]['Type'];
+                        
+                        if($_Type === 'Date') {
+                            $_Value = strtotime($_Value);
+                        } else if($_Type === 'Boolean') {
+                            $_Value = $_Value ? true : false;
+                        } else if(is_array($_Type)) {
+                            $_Value = Classify($_Value);
+                        } else if($_Type === 'JSON') {
+                            $_Value = JsonDecode($_Value);
+                        }
+                        
                         if(preg_match('/^OR\s+.+$/', $_Field)) {
                             if(preg_match('/^%.+%$/', $_Value)) {
                                 $_WherePieces[] = sprintf("OR `%s` LIKE '%s'", $this->Escape(Dasherize(preg_replace('/^OR\s+/', '', $_Field), true)), $this->Escape($_Value));
