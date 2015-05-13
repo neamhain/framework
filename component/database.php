@@ -411,7 +411,7 @@
                     $_WherePieces = [];
 
                     foreach($_Detail['WHERE'] as $_Field => $_Value) {
-                        $_Type = $this->Table[$_Name][preg_replace('/(!=|<|>|<=|>=)$/', '$1', $_Field)]['Type'];
+                        $_Type = $this->Table[$_Name][preg_replace('/(!=|<|>|<=|>=)$/', '', $_Field)]['Type'];
                         
                         if($_Type === 'Date') {
                             $_Value = date('Y-m-d H:i:s', $_Value);
