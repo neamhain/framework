@@ -473,7 +473,7 @@
                 $_SQL = sprintf("SELECT %s FROM `%s`%s%s%s%s", $_Fields, $this->Escape(Dasherize($_Name, true)), $_WhereClause, $_GroupByClause, $_OrderClause, $_LimitClause);
                 
                 Write(Framework::Resolve('cache/' . $_Hash . '.sql'), $_SQL);
-                Write(Framework::Resolve('cache/' . $_Hash . '.json'), array_merge(['Table' => $this->Table[$_Name], 'Detail' => $_Detail]));
+                Write(Framework::Resolve('cache/' . $_Hash . '.json'), JsonEncode(array_merge(['Table' => $this->Table[$_Name], 'Detail' => $_Detail])));
             } else {
                 $_SQL = Read(Framework::Resolve('cache/' . $_Hash . '.sql'));
             }
