@@ -28,29 +28,67 @@
     }
 
     function Upload($_Target) {
-        $_Directory = Framework::Resolve('files');
-        
-        MakeDirectory($_Directory);
-        
-        $_Result = null;
-        $_File = $_FILES[$_Target];
-        
-        if($_File && $_File['error'] === UPLOAD_ERR_OK) {
-            $_Extension = Lowercase(array_reverse(explode('.', $_File['name']))[0]);
+        $_Files = [];
 
-            if(preg_match('/jpe?g|png|gif/', $_Extension)) {
-                $_Path = Random() . '.' . $_Extension;
-
-                while(IsExists($_Directory . '/' . $_Path)) {
-                    $_Path = Random() . '.' . $_Extension;
+        if(is_array($_FILES[$_Target]['name'])) {
+            foreach($_FILES[$_Target] as $_Key => $_Items) {
+                foreach($_Items as $_Index => $_Value) {
+                    $_Files[$_Index][Classify($_Key)] = $_Value;
                 }
-
-                move_uploaded_file($_File['tmp_name'], $_Directory . '/' . $_Path);
-
-                $_Result = $_Path;
             }
+        } else {
+            $_Files = [[
+                'Name' => $_FILES[$_Target]['name'],
+                'Type' => $_FILES[$_Target]['type'],
+                'TmpName' => $_FILES[$_Target]['tmp_name'],
+                'Error' => $_FILES[$_Target]['error'],
+                'Size' => $_FILES[$_Target]['size']
+            ]];
+        }
+
+        $_Destinations = [];
+
+        foreach($_Files as $_Index => $_File) {
+            $_OrdinalSuffix = '';
+
+            switch(($_Index + 1) % 10) {
+                case 1: $_OrdinalSuffix = 'st'; break;
+                case 2: $_OrdinalSuffix = 'nd'; break;
+                case 3: $_OrdinalSuffix = 'rd'; break;
+                default: $_OrdinalSuffix = 'th';
+            }
+
+            $_OrdinalIndex = $_Index . $_OrdinalSuffix;
+
+            if($_File['Error'] === UPLOAD_ERR_INI_SIZE) {
+                continue;
+            } else if($_File['Error'] === UPLOAD_ERR_PARTIAL) {
+                continue;
+            } else if($_File['Error'] === UPLOAD_ERR_NO_FILE) {
+                continue;
+            }
+
+            $_FileType = exif_imagetype($_File['TmpName']);
+
+            if(!$_FileType || $_FileType > 3) {
+                continue;
+            }
+
+            $_Extension = [ 'gif', 'jpg', 'png' ][$_FileType];
+            $_Destination = 'files/' . sprintf('%s_%s', time(), Random()) . $_Extension;
+            $_Result = move_uploaded_file($_File['TmpName'], Framework::Resolve($_Destination));
+
+            if(!$_Result) {
+                continue;
+            }
+
+            $_Destinations[] = $_Destination;
         }
         
-        return $_Result ? '/files/' . $_Result : $_Result;
+        if(!$_Destinations[0])  {
+            $_Destinations = [''];
+        }
+        
+        return count($_Destinations) > 1 ? $_Destinations : $_Destinations[0];
     }
 ?>
