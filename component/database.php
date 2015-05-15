@@ -62,7 +62,7 @@
             return $this->Connection->real_escape_string($_String);
         }
         
-        public function Tables($_GetStructure) {
+        public function Tables($_GetStructure = false) {
             return !$_GetStructure ? array_keys($this->Table) : $this->Table;
         }
         
