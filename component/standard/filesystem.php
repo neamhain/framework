@@ -12,12 +12,22 @@
         return IsExists($_Target) ? file_get_contents($_Target) : null;
     }
 
-    function Write($_Target, $_Context) {
-        return is_writable(dirname($_Target)) ? file_put_contents($_Target, $_Context, LOCK_EX) : null;
+    function Write($_Target, $_Context, $_IsAppend = false) {
+        if(is_writable(dirname($_Target))) {
+            $_Result = file_put_contents($_Target, $_Context, ($_IsAppend ? FILE_APPEND : 0) | LOCK_EX);
+            
+            if($_Result) {
+                chmod($_Target, 0666);
+            }
+            
+            return $_Result ? true : false;
+        }
+        
+        return null;
     }
 
     function Append($_Target, $_Context) {
-        return file_put_contents($_Target, $_Context, FILE_APPEND | LOCK_EX);
+        return Write($_Target, $_Context, true);
     }
 
     function MakeDirectory($_Target, $_Permission = 0755) {
@@ -25,6 +35,24 @@
             mkdir($_Target, $_Permission);
             chmod($_Target, $_Permission);
         }
+    }
+
+    function Remove($_Target) {
+        if(is_file($_Target)) {
+            return unlink($_Target) ? true : false;
+        }
+        
+        foreach(array_diff(scandir($_Target), [ '.', '..' ]) as $_Item) {
+            if(is_dir($_Target . '/' . $_Item)) {
+                Remove($_Target . '/' . $_Item);
+                
+                continue;
+            }
+            
+            unlink($_Target . '/' . $_Item);
+        }
+        
+        return rmdir($_Target) ? true : false;
     }
 
     function Upload($_Target) {

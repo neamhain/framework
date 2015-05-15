@@ -29,15 +29,25 @@
                 return;
             }
             
+            MakeDirectory(Framework::Resolve('cache'), 0707);
             MakeDirectory(Framework::Resolve('files'), 0707);
             MakeDirectory(Framework::Resolve('module'), 0707);
+            MakeDirectory(Framework::Resolve('session'), 0707);
             MakeDirectory(Framework::Resolve('resource'), 0707);
             MakeDirectory(Framework::Resolve('resource/source'), 0707);
             MakeDirectory(Framework::Resolve('template'), 0707);
             MakeDirectory(Framework::Resolve('template/source'), 0707);
             
+            if(!IsExists(Framework::Resolve('cache/.htaccess'))) {
+                Write(Framework::Resolve('cache/.htaccess'), 'Require all denied');
+            }
+            
             if(!IsExists(Framework::Resolve('module/.htaccess'))) {
                 Write(Framework::Resolve('module/.htaccess'), 'Require all denied');
+            }
+            
+            if(!IsExists(Framework::Resolve('session/.htaccess'))) {
+                Write(Framework::Resolve('session/.htaccess'), 'Require all denied');
             }
             
             if(!IsExists(Framework::Resolve('template/.htaccess'))) {
@@ -52,7 +62,7 @@
                         '    RewriteEngine On',
                         '    RewriteBase /',
                         '    ',
-                        '    RewriteCond $1 !^(index\.php|framework|resource|template|files)',
+                        '    RewriteCond $1 !^(index\.php|framework|files|resource|template)',
                         '    RewriteCond %{REQUEST_FILENAME} !-f',
                         '    RewriteCond %{REQUEST_FILENAME} !-d',
                         '    RewriteRule ^(.*)$ ./index.php/$1 [L]',
@@ -66,7 +76,9 @@
                     Framework::Resolve('.gitignore'),
                     implode("\n", [
                         '# DIRECTORIES',
+                        '/cache',
                         '/files',
+                        '/session',
                         '',
                         '# FILES',
                         '/prepros.cfg',
@@ -75,11 +87,25 @@
                 );
             }
             
+            $_OpenSSL = openssl_pkey_new([
+                'digest_alg' => 'sha512',
+                'private_key_bits' => 2048,
+                'private_key_type' => OPENSSL_KEYTYPE_RSA
+            ]);
+            
+            openssl_pkey_export($_OpenSSL, $_RsaPrivateKey);
+            
+            $_RsaPublicKey = openssl_pkey_get_details($_OpenSSL)['key'];
+            
+            openssl_pkey_free($_OpenSSL);
+            
             $_Configuration = [
                 'UniqueId' => Random(),
                 'HashSalt' => Random(),
                 'AesKey' => mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC), MCRYPT_DEV_URANDOM),
-                'AesIv' => mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC), MCRYPT_DEV_URANDOM)
+                'AesIv' => mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC), MCRYPT_DEV_URANDOM),
+                'RsaPublicKey' => $_RsaPublicKey,
+                'RsaPrivateKey' => $_RsaPrivateKey
             ];
             
             foreach($_Configuration as $_Key => $_Value) {

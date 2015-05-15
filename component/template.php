@@ -39,7 +39,7 @@
                 'Head/OpenGraph' => '',
                 'Head/Others' => '',
                 'Body' => '',
-                'Page/ID' => FRAMEWORK_VIEW
+                'Page/ID' => defined('FRAMEWORK_VIEW') ? FRAMEWORK_VIEW : 'framework'
             ], $_Variable);
             
             $_Variable['Head/Meta'] = '<meta name="csrf-token" content="' . $_SESSION[Framework::Take('UniqueId')]['__CSRF_TOKEN__'] . '">' . $_Variable['Head/Meta'];

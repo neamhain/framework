@@ -27,7 +27,11 @@
     }
     
     function Password($_Plain) {
-        return password_hash($_Plain, PASSWORD_DEFAULT);
+        return password_hash($_Plain . FRAMEWORK_HASH_SALT, PASSWORD_DEFAULT);
+    }
+    
+    function PasswordVerify($_Plain, $_Password) {
+        return password_verify($_Plain . FRAMEWORK_HASH_SALT, $_Password);
     }
 
     function AesEncrypt($_Plain, $_Key = FRAMEWORK_AES_KEY, $_IV = FRAMEWORK_AES_IV) {
@@ -45,8 +49,48 @@
         
         return substr($_FilledData, 0, $_DataSize - $_FillingSize);
     }
+
+    function RsaEncrypt($_Plain, $_PublicKey = FRAMEWORK_RSA_PUBLIC_KEY) {
+        openssl_public_encrypt($_Plain, $_Cipher, $_PublicKey);
+        
+        return base64_encode($_Cipher);
+    }
+
+    function RsaDecrypt($_Cipher, $_PrivateKey = FRAMEWORK_RSA_PRIVATE_KEY) {
+        openssl_private_decrypt(base64_decode($_Cipher), $_Plain, $_PrivateKey);
+        
+        return $_Plain;
+        
+    }
     
     function CsrfTokenVerify($_CsrfToken) {
         return $_SESSION[Framework::Take('UniqueId')]['__CSRF_TOKEN__'] === $_CsrfToken;
+    }
+
+    function SessionEncode($_PlainSessionData) {
+        $_CurrentSession = $_SESSION;
+        
+        $_SESSION = $_PlainSessionData;
+        $_EncodedSessionData = session_encode();
+        $_SESSION = $_CurrentSession;
+        
+        return $_EncodedSessionData;
+    }
+
+    function SessionDecode($_EncodedSessionData) {
+        $_CurrentSession = $_SESSION;
+        
+        session_decode($_EncodedSessionData);
+        
+        $_PlainSessionData = $_SESSION;
+        $_SESSION = $_CurrentSession;
+        
+        return $_PlainSessionData;
+    }
+
+    function SessionModify($_SessionId, $_Handler) {
+        $_Path = Framework::Resolve('session/' . Sha512($_SessionId));
+        
+        Write($_Path, SessionEncode($_Handler(SessionDecode(Read($_Path)))));
     }
 ?>
