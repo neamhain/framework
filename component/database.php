@@ -418,7 +418,7 @@
                         } else if($_Type === 'Date') {
                             $_Value = date('Y-m-d H:i:s', $_Value);
                         } else if($_Type === 'Boolean') {
-                            $_Value = $_Value ? "1" : "0";
+                            $_Value = !!$_Value ? "TRUE" : "FALSE";
                         } else if(is_array($_Type)) {
                             $_Value = Lowercase($_Value);
                         } else if($_Type === 'JSON') {
@@ -436,6 +436,8 @@
                             $_WherePieces[] = sprintf("`%s` %s '%s'", $this->Escape(Dasherize(preg_replace('/(.+)(!=|<|>|<=|>=)$/', '$1', $_Field), true)), preg_replace('/.+(!=|<|>|<=|>=)$/', '$1', $_Field), $this->Escape(Dasherize($_Value, true)));
                         } else if($_Field === 'Serial') {
                             $_WherePieces[] = sprintf("`serial_id`='%s'", $this->Escape(Dasherize($_Value, true)));
+                        } else if($_Type === 'Boolean') {
+                            $_WherePieces[] = sprintf("`%s`=%s", $this->Escape(Dasherize($_Field, true)), $_Value);
                         } else {
                             if(preg_match('/^%.+%$/', $_Value)) {
                                 $_WherePieces[] = sprintf("`%s` LIKE '%s'", $this->Escape(Dasherize($_Field, true)), $this->Escape($_Value));
