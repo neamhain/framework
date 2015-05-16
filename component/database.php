@@ -418,7 +418,7 @@
                         } else if($_Type === 'Date') {
                             $_Value = date('Y-m-d H:i:s', $_Value);
                         } else if($_Type === 'Boolean') {
-                            $_Value = $_Value ? "TRUE" : "FALSE";
+                            $_Value = $_Value ? "1" : "0";
                         } else if(is_array($_Type)) {
                             $_Value = Lowercase($_Value);
                         } else if($_Type === 'JSON') {
