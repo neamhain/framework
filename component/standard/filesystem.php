@@ -96,14 +96,14 @@
                 continue;
             }
 
-            $_FileType = exif_imagetype($_File['TmpName']);
+            $_FileType = exif_imagetype($_File['TmpName']) - 1;
 
             if(!$_FileType || $_FileType > 3) {
                 continue;
             }
 
             $_Extension = [ 'gif', 'jpg', 'png' ][$_FileType];
-            $_Destination = 'files/' . sprintf('%s_%s', time(), Random()) . $_Extension;
+            $_Destination = 'files/' . sprintf('%s_%s', time(), Random()) . '.' . $_Extension;
             $_Result = move_uploaded_file($_File['TmpName'], Framework::Resolve($_Destination));
 
             if(!$_Result) {
