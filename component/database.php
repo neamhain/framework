@@ -442,7 +442,7 @@
                             if(preg_match('/^%.+%$/', $_Value)) {
                                 $_WherePieces[] = sprintf("`%s` LIKE '%s'", $this->Escape(Dasherize($_Field, true)), $this->Escape($_Value));
                             } else {
-                                $_WherePieces[] = sprintf("`%s`='%s'", $this->Escape(Dasherize($_Field, true)), $this->Escape(Dasherize($_Value, true)));
+                                $_WherePieces[] = sprintf("`%s`='%s'", $this->Escape(Dasherize($_Field, true)), $this->Escape($_Value));
                             }
                         }
                     }
