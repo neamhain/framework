@@ -31,7 +31,7 @@
     }
     
     function PasswordVerify($_Plain, $_Password) {
-        return Password($_Plain) === $_Password;
+        return Sha512($_Plain) === $_Password;
     }
 
     function AesEncrypt($_Plain, $_Key = FRAMEWORK_AES_KEY, $_IV = FRAMEWORK_AES_IV) {
