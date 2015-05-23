@@ -27,11 +27,11 @@
     }
     
     function Password($_Plain) {
-        return password_hash($_Plain . FRAMEWORK_HASH_SALT, PASSWORD_DEFAULT);
+        return Sha512($_Plain);
     }
     
     function PasswordVerify($_Plain, $_Password) {
-        return password_verify($_Plain . FRAMEWORK_HASH_SALT, $_Password);
+        return Password($_Plain) === $_Password;
     }
 
     function AesEncrypt($_Plain, $_Key = FRAMEWORK_AES_KEY, $_IV = FRAMEWORK_AES_IV) {

@@ -134,7 +134,7 @@
                         $_Type = [
                             'Serial' => 'BIGINT UNSIGNED',
                             'String' => "TINYTEXT",
-                            'Password' => "CHAR(60)",
+                            'Password' => "CHAR(128)",
                             'Number' => "BIGINT",
                             'Double' => "DOUBLE",
                             'Boolean' => "BOOLEAN",
@@ -235,7 +235,7 @@
                     $_Type = [
                         'Serial' => 'BIGINT UNSIGNED',
                         'String' => "TINYTEXT",
-                        'Password' => "CHAR(60)",
+                        'Password' => "CHAR(128)",
                         'Number' => "BIGINT",
                         'Double' => "DOUBLE",
                         'Boolean' => "BOOLEAN",
