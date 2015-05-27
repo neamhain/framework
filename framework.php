@@ -14,6 +14,7 @@
         public $Configuration = null;
         private $IsInstalled = null;
         private $Setting = null;
+        private $BinaryMode = null;
         
         public function __construct() {
             define('FRAMEWORK', true);
@@ -48,6 +49,7 @@
             
             $this->Configuration = [];
             $this->IsInstalled = false;
+            $this->BinaryMode = false;
         }
         
         static function Instance() {
@@ -94,9 +96,6 @@
         }
         
         public function Initialize($_Setting = []) {
-            header('Cache-Control: no-cache, no-store, must-revalidate');
-            header('Pragma: no-cache');
-            
             $this->Setting = array_merge([
                 'Deploy' => 'Production',
                 'Criteria' => dirname(__DIR__),
@@ -201,22 +200,63 @@
                 Module::Instance($_Mainstream = $this->IsInstalled ? $this->Setting['Mainstream'] : 'Install')->Process();
             }
             
-            $_Data = ob_get_clean();
-            
-            if(IsJson($_Data)) {
-                ContentType('application/json');
+            if(!$this->BinaryMode) {
+                $_Data = ob_get_clean();
                 
-                echo $_Data;
-                exit;
+                if(IsJson($_Data)) {
+                    ContentType('application/json');
+
+                    echo $_Data;
+                    exit;
+                }
+
+                $_Data = Template::Bind($_Data, [
+                    'Elapsed/Time' => round(microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'], 4),
+                    'Database/Time' => round($GLOBALS['FRAMEWORK_DATABASE_ELAPSED_TIME'], 4)
+                ], false, false);
+                
+                echo $_Errors, $_Data;
+            } else {
+                header('Cache-Control: no-cache, no-store, must-revalidate');
+                header('Pragma: no-cache');
+            }
+        }
+        
+        public function BinaryOutput($_File) {
+            if(is_array($_File)) {
+                $_Origin = implode('', array_keys($_File));
+                $_Target = implode('', array_values($_File));
+            } else {
+                $_Origin = $_Target = $_File;
             }
             
-            $_Data = Template::Bind($_Data, [
-                'Elapsed/Time' => round(microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'], 4),
-                'Database/Time' => round($GLOBALS['FRAMEWORK_DATABASE_ELAPSED_TIME'], 4)
-            ], false, false);
+            ob_clean();
             
-            echo $_Errors, $_Data;
-            exit;
+            $this->BinaryMode = true;
+            
+            if(preg_match('/MSIE|Trident/', $_SERVER['HTTP_USER_AGENT'])) {
+                $_Target = iconv('UTF-8', 'CP949//IGNORE', $_Target);
+            }
+            
+            header('Pragma: public');
+            header('Expires: 0');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="' . $_Target . '"');
+            header('Content-Transfer-Encoding: binary');
+            header('Content-Length: ' . filesize($_Origin));
+            
+            flush();
+            
+            $_Handle = fopen($_Origin, 'rb');
+            
+            while(!feof($_Handle)) {
+                echo fread($_Handle, 1);
+                
+                ob_flush();
+                flush();
+            }
+            
+            fclose($_Handle);
         }
     }
 ?>
