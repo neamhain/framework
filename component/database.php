@@ -49,6 +49,8 @@
             
             $_Result = $this->Connection->query($_SQL);
             
+            var_dump($_SQL);
+            
             $GLOBALS['FRAMEWORK_DATABASE_ELAPSED_TIME'] += microtime(true);
             
             return $_Result;
@@ -555,7 +557,7 @@
                     } else if(preg_match('/Number|Double/', $_Type) && preg_match('/^-/', $_Value)) {
                         $_ValueClause = sprintf("`%s`-'%s'", $this->Escape(Dasherize($_Field, true)), preg_replace('/^-/', '', $_Value));
                     } else if($_Type === 'JSON') {
-                        $_ValueClause = sprintf("'%s'", JsonEncode($_Value, JSON_NUMERIC_CHECK));
+                        $_ValueClause = sprintf("'%s'", $_Value ? JsonEncode($_Value, JSON_NUMERIC_CHECK) : "[]");
                     } else {
                         $_ValueClause = sprintf("'%s'", $this->Escape($_Value));
                     }
@@ -621,7 +623,7 @@
                     } else if(is_array($_Type)) {
                         $_ValuesClause[] = sprintf("'%s'", Lowercase($_Value));
                     } else if($_Type === 'JSON') {
-                        $_ValuesClause[] = JsonEncode($_Value, JSON_NUMERIC_CHECK);
+                        $_ValuesClause[] = $_Value ? JsonEncode($_Value, JSON_NUMERIC_CHECK) : "'[]'";
                     } else {
                         $_ValuesClause[] = sprintf("'%s'", $this->Escape($_Value));
                     }
