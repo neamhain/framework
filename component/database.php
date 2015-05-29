@@ -136,7 +136,7 @@
                         $_Type = [
                             'Serial' => 'BIGINT UNSIGNED',
                             'String' => "TINYTEXT",
-                            'Password' => "CHAR(60)",
+                            'Password' => "CHAR(128)",
                             'Number' => "BIGINT",
                             'Double' => "DOUBLE",
                             'Boolean' => "BOOLEAN",
@@ -237,7 +237,7 @@
                     $_Type = [
                         'Serial' => 'BIGINT UNSIGNED',
                         'String' => "TINYTEXT",
-                        'Password' => "CHAR(60)",
+                        'Password' => "CHAR(128)",
                         'Number' => "BIGINT",
                         'Double' => "DOUBLE",
                         'Boolean' => "BOOLEAN",
@@ -444,7 +444,7 @@
                             if(preg_match('/^%.+%$/', $_Value)) {
                                 $_WherePieces[] = sprintf("`%s` LIKE '%s'", $this->Escape(Dasherize($_Field, true)), $this->Escape($_Value));
                             } else {
-                                $_WherePieces[] = sprintf("`%s`='%s'", $this->Escape(Dasherize($_Field, true)), $this->Escape(Dasherize($_Value, true)));
+                                $_WherePieces[] = sprintf("`%s`='%s'", $this->Escape(Dasherize($_Field, true)), $this->Escape($_Value));
                             }
                         }
                     }
