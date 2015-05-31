@@ -49,8 +49,6 @@
             
             $_Result = $this->Connection->query($_SQL);
             
-            var_dump($_SQL);
-            
             $GLOBALS['FRAMEWORK_DATABASE_ELAPSED_TIME'] += microtime(true);
             
             return $_Result;
